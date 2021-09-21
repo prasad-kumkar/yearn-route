@@ -6,8 +6,10 @@ Currently the following is demonstrated:
 
 - Forking off Mainnet with [Ganache](https://github.com/trufflesuite/ganache-core)
 - Forking off of a fork of Mainnet to run tests in parallel (thanks to [Jest](https://jestjs.io/))
-- Buying DAI with ETH from [Uniswap](https://uniswap.exchange/)
-- Checking ETH price in DAI from custom function in [`MyDapp.sol`](./contracts/MyDapp.sol) which extends off of [`UniswapLiteBase.sol`](./contracts/UniswapLiteBase.sol) which uses Uniswap's on-chain contracts
+- Checking token prices in DAI with Uniswap's on-chain contracts
+- Swapping ETH for DAI from [Uniswap](https://uniswap.exchange/)
+- Invest DAI in yearn contract by approving tokens and calling the custom `enter (uint256 amount)` function. User would receive the equivalent yDAI tokens in their wallet
+- Exit position by depositing back yDai calling the `exit (uint256 amount)` function, Now, user would receive DAI back in their wallet
 
 ## Usage
 

@@ -29,6 +29,7 @@ describe("initial conditions", () => {
     );
   });
 
+  // check eth price
   test("check ETH price in DAI is between 0 and 10000", async () => {
     const ethPriceWei = await myDapp.getEthPriceInDai();
     const ethPrice = parseFloat(fromWei(ethPriceWei));
@@ -38,7 +39,6 @@ describe("initial conditions", () => {
   });
 
   test("buy DAI with 5 ETH from Uniswap", async () => {
-    
     // confirm we have chainId of 1
     const network = await wallet.provider.getNetwork();
     expect(network.chainId).toBe(1);
@@ -68,46 +68,65 @@ describe("initial conditions", () => {
     expect(ethLost).toBeCloseTo(5);
   });
 
-  test("approve 1000 dai for myDapp", async() => {
+  // Approve 1000 dai to invest
+  test("approve 1000 dai for myDapp contract", async() => {
     await daiContract.approve(myDapp.address, toWei(1000));
     const allowance = await daiContract.allowance(wallet.address, myDapp.address)
     expect(parseFloat(fromWei(allowance))).toBe(1000);
   });
 
-  test("enter with 1000 dai", async() => {
-
-    await myDapp.enter(toWei(1000));
+  // Invest by calling 'enter' function of myDapp
+  test("enter investment with 1000 dai", async() => {
 
     let yDaiBalanceOfUser = await yDaiContract.balanceOf(wallet.address);
     let daiBalanceOfUser = await daiContract.balanceOf(wallet.address);
 
+    expect(parseFloat(fromWei(yDaiBalanceOfUser))).toBeGreaterThan(0)
+    expect(parseFloat(fromWei(daiBalanceOfUser))).toBe(fromWei(initialDAI) - 1000)
 
     console.log(
-      `yDaiBalanceOfUser : ${parseFloat(fromWei(yDaiBalanceOfUser))} 
-       daiBalanceOfUser : ${parseFloat(fromWei(daiBalanceOfUser))} 
+      `Initial Balance: \n yDaiBalanceOfUser : ${parseFloat(fromWei(yDaiBalanceOfUser))} \n daiBalanceOfUser : ${parseFloat(fromWei(daiBalanceOfUser))} 
+       `
+      );
+
+    let initialDAI = await daiContract.balanceOf(wallet.address);
+
+    await myDapp.enter(toWei(1000));
+
+    yDaiBalanceOfUser = await yDaiContract.balanceOf(wallet.address);
+    daiBalanceOfUser = await daiContract.balanceOf(wallet.address);
+
+    expect(parseFloat(fromWei(yDaiBalanceOfUser))).toBeGreaterThan(0)
+    expect(parseFloat(fromWei(daiBalanceOfUser))).toBe(fromWei(initialDAI) - 1000)
+
+    console.log(
+      `Balance after investing 1000 dai: \n yDaiBalanceOfUser : ${parseFloat(fromWei(yDaiBalanceOfUser))} \n daiBalanceOfUser : ${parseFloat(fromWei(daiBalanceOfUser))} 
        `
       );
   });
 
-
+  // Approve spending 500 yDai
   test("approve 500 ydai for myDapp", async() => {
     await yDaiContract.approve(myDapp.address, toWei(500));
     const allowance = await yDaiContract.allowance(wallet.address, myDapp.address)
     expect(parseFloat(fromWei(allowance))).toBe(500);
   });
 
-  test("exit with 500 dai", async() => {
+  // Exit position with 500 yDai by calling 'exit' function
+  test("exit with 500 ydai", async() => {
+
+    let initialyDAI = await yDaiContract.balanceOf(wallet.address);
 
     await myDapp.exit(toWei(500));
 
     let yDaiBalanceOfUser = await yDaiContract.balanceOf(wallet.address);
     let daiBalanceOfUser = await daiContract.balanceOf(wallet.address);
 
+    expect(parseFloat(fromWei(yDaiBalanceOfUser))).toBeCloseTo(fromWei(initialyDAI)-500)
+    expect(parseFloat(fromWei(daiBalanceOfUser))).toBeGreaterThan(0)
 
     console.log(
-      `yDaiBalanceOfUser : ${parseFloat(fromWei(yDaiBalanceOfUser))} 
-      daiBalanceOfUser : ${parseFloat(fromWei(daiBalanceOfUser))} 
-       `
+      `Balance after exiting with 500 ydai: \n yDaiBalanceOfUser : ${parseFloat(fromWei(yDaiBalanceOfUser))} \n daiBalanceOfUser : ${parseFloat(fromWei(daiBalanceOfUser))} `
       );
   });
 });
