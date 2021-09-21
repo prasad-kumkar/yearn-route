@@ -81,8 +81,8 @@ describe("initial conditions", () => {
     let yDaiBalanceOfUser = await yDaiContract.balanceOf(wallet.address);
     let daiBalanceOfUser = await daiContract.balanceOf(wallet.address);
 
-    expect(parseFloat(fromWei(yDaiBalanceOfUser))).toBeGreaterThan(0)
-    expect(parseFloat(fromWei(daiBalanceOfUser))).toBe(fromWei(initialDAI) - 1000)
+    expect(parseFloat(fromWei(yDaiBalanceOfUser))).toBe(0)
+    expect(parseFloat(fromWei(daiBalanceOfUser))).toBeGreaterThan(1000)
 
     console.log(
       `Initial Balance: \n yDaiBalanceOfUser : ${parseFloat(fromWei(yDaiBalanceOfUser))} \n daiBalanceOfUser : ${parseFloat(fromWei(daiBalanceOfUser))} 
